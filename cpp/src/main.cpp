@@ -6,6 +6,7 @@
 #include "Token.hpp"
 #include "TokenType_Enum.hpp"
 #include "TokenType_Str.hpp"
+#include "File_Builder.hpp"
 
 //converting a vector<char>.data() to a string
 std::string convert_vector_to_string(char* to_convert, int vector_size){
@@ -14,7 +15,7 @@ std::string convert_vector_to_string(char* to_convert, int vector_size){
 }
 
 //Defining a vector that will tokenize the file
-std::vector<Token> tokens(std::string& str){
+std::vector<Token> find_tokens(std::string& str){
 
     TokenType_Str tokens_str = TokenType_Str();
 
@@ -65,6 +66,33 @@ std::vector<Token> tokens(std::string& str){
 }
 
 
+//OUTDATED --> SHOULD DO PARSE TREE
+std::string building_asm(std::vector<Token>& tokens){
+
+    std::stringstream res;
+
+    res << "global _start\n";
+    res << "_start:\n";
+
+    for(int i = 0; i < tokens.size(); i++){
+        Token t = tokens.at(i);
+
+        if(t.getType() == TokenType::_return && i + 2 < tokens.size()){
+            if(tokens.at(i + 1).getType() == TokenType::int_literal && tokens.at(i + 2).getType() == TokenType::semi_col){
+                res << "    mov rax, 60\n";
+                res << "    mov rdi, " << tokens.at(i+1).getVal() << '\n';
+                res << "    syscall\n";
+            }
+        }
+    }
+
+
+    return res.str();
+}
+
+
+
+
 int main(int argc, char* argv[]){
 
     //If input invalid = error, we don't do anything
@@ -108,11 +136,14 @@ int main(int argc, char* argv[]){
     //we got a string, now we want tokens
     //so let's get tokens
 
-    std::vector<Token> valid_tokens = tokens(totalStr);
+    std::vector<Token> valid_tokens = find_tokens(totalStr);
+    std::cout << building_asm(valid_tokens) << std::endl;
 
-    for(Token t : valid_tokens){
-        std::cout << t.getVal() << std::endl;
-    }
+    File_Builder fb = File_Builder();
+    fb.build_file(building_asm(valid_tokens));
+
+    system("nasm -f elf64 output/finished_product.asm");
+    system("ld output/finished_product.o -o output/finished_product");
 
     return 0;
 }
