@@ -23,34 +23,41 @@ std::vector<Token> tokens(std::string& str){
     std::vector<char> buffer;
 
     bool is_int_literal = false;
+    bool have_been_whitespace = false;
 
     for(char c : str){
 
         if(std::isalpha(c)){ //if letter
             buffer.push_back(c);
-            is_int_literal = false;
+            if(have_been_whitespace){
+                is_int_literal = false;
+            }
         }
         else if(std::isdigit(c)){ //if is digit
             buffer.push_back(c);
-            is_int_literal = true;
+            if(have_been_whitespace){
+                is_int_literal = true;
+            }
         }
-        else if(std::isspace(c)){ //whitespace detected, so we check if the buffer is a token type, we clear the buffer after, even if the word is not a token type
+        else if(std::isspace(c) || c == ';'){
+            //whitespace or semicolons detected, so we check if the previous word is a token type, then we empty the buffer
             std::string word = convert_vector_to_string(buffer.data(), buffer.size());
             
             if(word == tokens_str.tokens_values[VAL_OF_RETURN]){
                 res.push_back(Token(TokenType::_return, "return"));
             }
-
-            if(is_int_literal){
+            else if(is_int_literal){
                 res.push_back(Token(TokenType::int_literal, word));
+            }
+
+            if(c == ';'){
+                res.push_back(Token(TokenType::semi_col, ";"));
+            }else{
+                have_been_whitespace = true;
             }
 
             buffer.clear();
         }
-        else if(c == ';'){
-            res.push_back(Token(TokenType::semi_col, ";"));
-        }
-
     }
 
 
@@ -97,8 +104,6 @@ int main(int argc, char* argv[]){
         return 1;
 
     }
-
-    //std::cout << totalStr << std::endl;
 
     //we got a string, now we want tokens
     //so let's get tokens
