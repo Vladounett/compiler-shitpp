@@ -6,12 +6,6 @@
 #include <string>
 #include <array>
 
-class TokenType_Str{
-
-    public:
-        TokenType_Str();
-        std::array<std::string, 2> tokens_values = {"return", "test"};
-
-};
+std::array<std::string, 2> TOKENS_VALUES = {"return", "test"};
 
 #endif

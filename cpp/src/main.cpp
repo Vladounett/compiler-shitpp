@@ -5,64 +5,21 @@
 #include <vector>
 #include "Token.hpp"
 #include "TokenType_Enum.hpp"
-#include "TokenType_Str.hpp"
+#include "Tokenizer.hpp"
 #include "File_Builder.hpp"
-
-//converting a vector<char>.data() to a string
-std::string convert_vector_to_string(char* to_convert, int vector_size){
-    std::string res(to_convert, vector_size);
-    return res;
-}
 
 //Defining a vector that will tokenize the file
 std::vector<Token> find_tokens(std::string& str){
 
-    TokenType_Str tokens_str = TokenType_Str();
-
-    std::vector<Token> res;
-
-    std::vector<char> buffer;
-
-    bool is_int_literal = false;
-    bool have_been_whitespace = false;
+    Tokenizer tokenizer = Tokenizer(str);
 
     for(char c : str){
-
-        if(std::isalpha(c)){ //if letter
-            buffer.push_back(c);
-            if(have_been_whitespace){
-                is_int_literal = false;
-            }
-        }
-        else if(std::isdigit(c)){ //if is digit
-            buffer.push_back(c);
-            if(have_been_whitespace){
-                is_int_literal = true;
-            }
-        }
-        else if(std::isspace(c) || c == ';'){
-            //whitespace or semicolons detected, so we check if the previous word is a token type, then we empty the buffer
-            std::string word = convert_vector_to_string(buffer.data(), buffer.size());
-            
-            if(word == tokens_str.tokens_values[VAL_OF_RETURN]){
-                res.push_back(Token(TokenType::_return, "return"));
-            }
-            else if(is_int_literal){
-                res.push_back(Token(TokenType::int_literal, word));
-            }
-
-            if(c == ';'){
-                res.push_back(Token(TokenType::semi_col, ";"));
-            }else{
-                have_been_whitespace = true;
-            }
-
-            buffer.clear();
+        if(c != EOF){
+            tokenizer.push(c);
         }
     }
 
-
-    return res;
+    return tokenizer.getTokens();
 }
 
 
@@ -139,11 +96,11 @@ int main(int argc, char* argv[]){
     std::vector<Token> valid_tokens = find_tokens(totalStr);
     std::cout << building_asm(valid_tokens) << std::endl;
 
-    File_Builder fb = File_Builder();
+    /*File_Builder fb = File_Builder();
     fb.build_file(building_asm(valid_tokens));
 
     system("nasm -f elf64 output/finished_product.asm");
-    system("ld output/finished_product.o -o output/finished_product");
+    system("ld output/finished_product.o -o output/finished_product");*/
 
     return 0;
 }
