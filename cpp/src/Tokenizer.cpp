@@ -18,10 +18,14 @@ void Tokenizer::push(char c){
         buffer.push_back(c);
 
         if(this->flag_have_been_whitespace){
+
             this->flag_is_int_literal = false;
             this->flag_have_been_whitespace = false;
+
         }else if(this->flag_have_been_digit){
+
             this->flag_is_int_literal = false;
+
         }
         this->flag_have_been_digit = false;
 
@@ -30,8 +34,10 @@ void Tokenizer::push(char c){
         buffer.push_back(c);
 
         if(this->flag_have_been_whitespace){
+
             this->flag_is_int_literal = true;
             this->flag_have_been_whitespace = false;
+            
         }
         this->flag_have_been_digit = true;
 

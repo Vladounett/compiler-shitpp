@@ -7,6 +7,7 @@
 #include "TokenType_Enum.hpp"
 #include "Tokenizer.hpp"
 #include "File_Builder.hpp"
+#include "Parser.hpp"
 
 //Defining a vector that will tokenize the file
 std::vector<Token> find_tokens(std::string& str){
@@ -94,13 +95,18 @@ int main(int argc, char* argv[]){
     //so let's get tokens
 
     std::vector<Token> valid_tokens = find_tokens(totalStr);
-    std::cout << building_asm(valid_tokens) << std::endl;
+    Parser parser = Parser(valid_tokens);
 
-    /*File_Builder fb = File_Builder();
-    fb.build_file(building_asm(valid_tokens));
+    parser.parse();
+    std::string asm_str = parser.build_asm();
+
+    std::cout << asm_str << std::endl;
+
+    File_Builder fb = File_Builder();
+    fb.build_file(asm_str);
 
     system("nasm -f elf64 output/finished_product.asm");
-    system("ld output/finished_product.o -o output/finished_product");*/
+    system("ld output/finished_product.o -o output/finished_product");
 
     return 0;
 }

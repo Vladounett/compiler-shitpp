@@ -9,6 +9,7 @@ class Token{
 
     public:
 
+        Token();
         Token(TokenType type_set, std::string val_set);
         TokenType getType();
         std::string getVal();

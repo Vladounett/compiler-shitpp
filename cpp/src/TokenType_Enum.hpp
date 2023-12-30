@@ -4,7 +4,8 @@
 enum class TokenType{
     _return,
     int_literal,
-    semi_col
+    semi_col,
+    null
 };
 
 #endif

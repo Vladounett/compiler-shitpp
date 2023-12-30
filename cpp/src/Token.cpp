@@ -1,5 +1,10 @@
 #include "Token.hpp"
 
+Token::Token(){
+    this->type = TokenType::null;
+    this->val = "";
+}
+
 Token::Token(TokenType type_set, std::string val_set){
     this->type = type_set;
     this->val = val_set;
