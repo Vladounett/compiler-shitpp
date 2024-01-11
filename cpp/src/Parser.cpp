@@ -5,22 +5,63 @@ Parser::Parser(std::vector<Token> tokens_set){
     this->current_index = 0;
 }
 
-void Parser::parse(){
+//Parse with the tokens given
 
-    const int size_tokens_vec = this->tokens.size();
+void Parser::parse(){
 
     while(tokens_current_token_exist()){
 
-        if(get_token().getType() == TokenType::_return){
+        Token t = get_token();
+        //std::cout <<t.getVal() << std::endl;
+
+        if(t.getType() == TokenType::_return){
 
             Node_ret node_ret = Node_ret();
 
+            //Try to parse an expression with the next token in the vector
             node_ret.expr = parse_expr();
 
             Node_holder node_hold = Node_holder(nodes_type::ret);
             node_hold.ret = node_ret;
 
-            std::cout << "la val : " << node_hold.ret.expr.int_literal.getVal() << std::endl;
+            this->nodes.push_back(node_hold);
+
+        }else if(t.getType() == TokenType::int_decl){
+
+            if(this->current_index + 1 > this->tokens.size()){
+                std::cerr << "Error : parser out of range" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+
+            Token nextToken_var_name = get_token();
+
+            if(nextToken_var_name.getType() != TokenType::var_name){ //we got a key word to declare an int, so now we check if the next token is a var_name, if not we quit
+                std::cerr << "Error : var name expected >> " << nextToken_var_name.getVal() << " << huh huh ??" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+
+            Token nextToken_equal = get_token();
+
+            if(nextToken_equal.getType() != TokenType::equal){
+                std::cerr << "Error : = expected >> " << nextToken_equal.getVal() << " << huh huh ??" << std::endl; //we got a var_name as expected before, now we check that the next token is an equel, we quit if else
+                exit(EXIT_FAILURE);
+            }
+
+            Node_int_decl node_int = Node_int_decl();
+
+            node_int.var_name = nextToken_var_name.getVal();
+
+            if(doesVarAlreadyDeclared(node_int.var_name)){ //verify if var_name is already declared
+                std::cerr << "Error : var_name already declared >> " << node_int.var_name << " << this already exist" << std::endl;
+                exit(EXIT_FAILURE);
+            } 
+
+            node_int.expr = parse_expr(); //we try to parse an expression, the compiler will quit if it is not
+
+            this->known_var.push_back(node_int.var_name); //if everything goes right, then we register the var_name in our vector of var_name
+
+            Node_holder node_hold = Node_holder(nodes_type::int_decl);
+            node_hold.int_decl = node_int;
 
             this->nodes.push_back(node_hold);
 
@@ -30,7 +71,14 @@ void Parser::parse(){
 
 }
 
+//Try to parse an expression from the current token
+
 Node_expr Parser::parse_expr(){
+
+    if(this->current_index + 1 > this->tokens.size()){
+        std::cerr << "Error : parser out of range" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
     Node_expr res;
     res.node_type = nodes_type::expr;
@@ -39,15 +87,21 @@ Node_expr Parser::parse_expr(){
 
     if(current_t.getType() == TokenType::int_literal){
         res.int_literal = current_t;
+    }else if(current_t.getType() == TokenType::var_name){
+        std::cerr << "Error : invalid token >>" << current_t.getVal() << " << icant fr" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     if(res.int_literal.getType() == TokenType::null){
+        std::cerr << "Error :: null token" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     return res;
 
 }
+
+//Return the token at the current index and increment the index
 
 Token Parser::get_token(){
     
@@ -56,6 +110,8 @@ Token Parser::get_token(){
     return res;
 
 }
+
+//Return true if the current index is within the length of the vector of tokens
 
 bool Parser::tokens_current_token_exist(){
 
@@ -67,23 +123,26 @@ bool Parser::tokens_current_token_exist(){
 
 }
 
+//Return the nodes knowns of the parser
+
 std::vector<Node_holder> Parser::get_nodes(){
     return this->nodes;
 }
 
-std::string Parser::build_asm(){
-    std::stringstream res;
-    res << "global _start\n";
-    res << "_start:\n";
+//Return the vector of known var
 
-    for(Node_holder n : this->nodes){
-        
-        if(n.node_type == nodes_type::ret){
-            res << "    mov rax, 60\n" ;
-            res << "    mov rdi, " << n.ret.expr.int_literal.getVal() << "\n";
-            res << "    syscall\n";
-        }
+std::vector<std::string> Parser::get_known_var(){
+    return this->known_var;
+}
+
+bool Parser::doesVarAlreadyDeclared(std::string str){
+
+    auto it = std::find(this->known_var.begin(), this->known_var.end(), str);
+
+    if(it == this->known_var.end()){
+        return false;
+    }else{
+        return true;
     }
 
-    return res.str();
 }

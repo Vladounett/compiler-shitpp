@@ -18,8 +18,10 @@ class Tokenizer{
         std::vector<Token> tokens;
         std::vector<char> buffer;
         bool flag_is_int_literal;
-        bool flag_have_been_whitespace;
-        bool flag_have_been_digit;
+        //bool flag_is_word_correct;
+        bool flag_space_decl;
+        bool flag_word_found;
+        char last_char;
 
 };
 

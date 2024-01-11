@@ -8,8 +8,9 @@
 #include "Tokenizer.hpp"
 #include "File_Builder.hpp"
 #include "Parser.hpp"
+#include "Asm_gen.hpp"
 
-//Defining a vector that will tokenize the file
+//Defining a function that will tokenize the file
 std::vector<Token> find_tokens(std::string& str){
 
     Tokenizer tokenizer = Tokenizer(str);
@@ -22,33 +23,6 @@ std::vector<Token> find_tokens(std::string& str){
 
     return tokenizer.getTokens();
 }
-
-
-//OUTDATED --> SHOULD DO PARSE TREE
-std::string building_asm(std::vector<Token>& tokens){
-
-    std::stringstream res;
-
-    res << "global _start\n";
-    res << "_start:\n";
-
-    for(int i = 0; i < tokens.size(); i++){
-        Token t = tokens.at(i);
-
-        if(t.getType() == TokenType::_return && i + 2 < tokens.size()){
-            if(tokens.at(i + 1).getType() == TokenType::int_literal && tokens.at(i + 2).getType() == TokenType::semi_col){
-                res << "    mov rax, 60\n";
-                res << "    mov rdi, " << tokens.at(i+1).getVal() << '\n';
-                res << "    syscall\n";
-            }
-        }
-    }
-
-
-    return res.str();
-}
-
-
 
 
 int main(int argc, char* argv[]){
@@ -76,8 +50,10 @@ int main(int argc, char* argv[]){
         std::string line;
 
         while(std::getline(fileToRead, line)){
-            total << line << '\n';
+            total << line;
         }
+
+
 
         totalStr = total.str();
 
@@ -92,21 +68,31 @@ int main(int argc, char* argv[]){
     }
 
     //we got a string, now we want tokens
-    //so let's get tokens
+    //so let's get tokens   
 
     std::vector<Token> valid_tokens = find_tokens(totalStr);
+
+    //Now we parse it
+
+    /*for(Token t : valid_tokens){
+        std::cout << "token : " << t.getVal() << std::endl;
+    }*/
+
     Parser parser = Parser(valid_tokens);
 
     parser.parse();
-    std::string asm_str = parser.build_asm();
+
+    Asm_gen gen = Asm_gen(parser.get_nodes(), parser.get_known_var());
+
+    std::string asm_str = gen.build_asm();
 
     std::cout << asm_str << std::endl;
 
-    File_Builder fb = File_Builder();
+    /*File_Builder fb = File_Builder();
     fb.build_file(asm_str);
 
     system("nasm -f elf64 output/finished_product.asm");
-    system("ld output/finished_product.o -o output/finished_product");
+    system("ld output/finished_product.o -o output/finished_product");*/
 
     return 0;
 }
