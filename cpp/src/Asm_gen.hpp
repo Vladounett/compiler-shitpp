@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 class Asm_gen{
 
@@ -21,6 +22,8 @@ class Asm_gen{
         std::vector<std::string> known_var;
         std::string gen_node(Node_ret n);
         std::string gen_node(Node_int_decl n);
+        size_t stack_size;
+        short find_var_name_index(std::string str);
 
 };
 

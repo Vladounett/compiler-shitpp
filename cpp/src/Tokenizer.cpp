@@ -87,15 +87,6 @@ void Tokenizer::push(char c){
             this->flag_is_int_literal = false;
 
         }
-
-        if(c == ';'){ //if its a semicolon, then we juste create a token semicolon
-
-            this->tokens.push_back(Token(TokenType::semi_col, ";"));
-            buffer.clear();
-            this->last_char = c;
-            //std::cout << "semicolon" << std::endl;
-
-        }
         
         //If it was not a recongnized word, we verifiy :
         if(!this->flag_word_found){
@@ -113,9 +104,15 @@ void Tokenizer::push(char c){
 
             }else{ //it could be a var_name so we verify if it could be a valid var_name then we create the token if yes, the parser will see himself if the syntax is valid or nah 
 
-                if(word[0] != '\0'){
+                if(word[0] != '\0' && !std::isdigit(word[0])){
 
                     this->tokens.push_back(Token(TokenType::var_name, word));
+
+                    if(c == ';'){ //if its a semicolon, then we juste create a token semicolon
+                        this->tokens.push_back(Token(TokenType::semi_col, ";"));
+                        //std::cout << "semicolon" << std::endl;
+                    }
+                    
                     buffer.clear();
                     this->last_char = c;
                     //std::cout << "var_name : " << word[0] /*static_cast<int>(word[0])*/ << std::endl;
@@ -128,6 +125,12 @@ void Tokenizer::push(char c){
             }
 
         }else{ //if it was recognized, then we just store c in the last char, and clear the buffer
+
+            if(c == ';'){ //if its a semicolon, then we juste create a token semicolon
+            this->tokens.push_back(Token(TokenType::semi_col, ";"));
+            //std::cout << "semicolon" << std::endl;
+            }
+
             this->last_char = c;
             buffer.clear();
         }

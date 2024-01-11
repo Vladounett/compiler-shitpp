@@ -85,16 +85,36 @@ Node_expr Parser::parse_expr(){
 
     Token current_t = get_token();
 
-    if(current_t.getType() == TokenType::int_literal){
-        res.int_literal = current_t;
-    }else if(current_t.getType() == TokenType::var_name){
-        std::cerr << "Error : invalid token >>" << current_t.getVal() << " << icant fr" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    if(current_t.getType() == TokenType::int_literal){ //if next token is int_literal, we just use his value
 
-    if(res.int_literal.getType() == TokenType::null){
-        std::cerr << "Error :: null token" << std::endl;
+        res.int_literal = current_t;
+
+        if(res.int_literal.getType() == TokenType::null){
+            std::cerr << "Error :: null token" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+    }else if(current_t.getType() == TokenType::var_name){ //if next token is a reference to a var_name we change is_var_ref so the generator can known it is supposed to be a reference
+    
+        if(doesVarAlreadyDeclared(current_t.getVal())){
+
+            res.is_var_ref = true;
+            Node_var_ref var_ref_set = Node_var_ref();
+            var_ref_set.var_name = current_t.getVal();
+            res.var_ref = var_ref_set;
+
+        }else{ //if the var_name is not known from the parser, then we throw an error
+
+            std::cerr << "Error : unknown var_name >> " << current_t.getVal() << " << unknown shit" << std::endl;
+            exit(EXIT_FAILURE);
+
+        }
+
+    }else{
+
+        std::cerr << "Error : invalid token >> " << current_t.getVal() << " << icant fr" << std::endl;
         exit(EXIT_FAILURE);
+        
     }
 
     return res;
