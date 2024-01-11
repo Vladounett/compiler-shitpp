@@ -8,7 +8,7 @@
 
 class Tokenizer{
     public:
-        Tokenizer(std::string str_set);
+        Tokenizer(std::string& str_set);
         std::vector<Token> getTokens();
         void push(char c);
 

@@ -1,6 +1,6 @@
 #include "Asm_gen.hpp"
 
-Asm_gen::Asm_gen(std::vector<Node_holder> nodes_set, std::vector<std::string> known_var_set){
+Asm_gen::Asm_gen(std::vector<Node_holder>& nodes_set, std::vector<std::string>& known_var_set){
 
     this->known_var = known_var_set;
     this->nodes = nodes_set;

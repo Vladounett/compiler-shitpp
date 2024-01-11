@@ -1,6 +1,6 @@
 #include "Parser.hpp"
 
-Parser::Parser(std::vector<Token> tokens_set){
+Parser::Parser(std::vector<Token>& tokens_set){
     this->tokens = tokens_set;
     this->current_index = 0;
 }
@@ -145,14 +145,14 @@ bool Parser::tokens_current_token_exist(){
 
 //Return the nodes knowns of the parser
 
-std::vector<Node_holder> Parser::get_nodes(){
-    return this->nodes;
+std::vector<Node_holder>* Parser::get_nodes(){
+    return &this->nodes;
 }
 
 //Return the vector of known var
 
-std::vector<std::string> Parser::get_known_var(){
-    return this->known_var;
+std::vector<std::string>* Parser::get_known_var(){
+    return &this->known_var;
 }
 
 bool Parser::doesVarAlreadyDeclared(std::string str){

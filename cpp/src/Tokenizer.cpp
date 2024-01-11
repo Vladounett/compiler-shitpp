@@ -1,7 +1,7 @@
 #include "Tokenizer.hpp"
 #include "TokenType_Str.hpp"
 
-Tokenizer::Tokenizer(std::string str_set){
+Tokenizer::Tokenizer(std::string& str_set){
     this->str = str_set;
     this->flag_is_int_literal = false;
     this->last_char = ' ';

@@ -12,7 +12,7 @@ class Asm_gen{
 
     public:
 
-        Asm_gen(std::vector<Node_holder> nodes_set, std::vector<std::string> known_var_set);
+        Asm_gen(std::vector<Node_holder>& nodes_set, std::vector<std::string>& known_var_set);
         std::string build_asm();
 
 

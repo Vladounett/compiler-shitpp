@@ -13,10 +13,10 @@ class Parser{
 
     public:
 
-        Parser(std::vector<Token> tokens_set);
+        Parser(std::vector<Token>& tokens_set);
         void parse();
-        std::vector<Node_holder> get_nodes();
-        std::vector<std::string> get_known_var();
+        std::vector<Node_holder>* get_nodes();
+        std::vector<std::string>* get_known_var();
 
 
     private:

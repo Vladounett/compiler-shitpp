@@ -82,7 +82,7 @@ int main(int argc, char* argv[]){
 
     parser.parse();
 
-    Asm_gen gen = Asm_gen(parser.get_nodes(), parser.get_known_var());
+    Asm_gen gen = Asm_gen(*parser.get_nodes(), *parser.get_known_var());
 
     std::string asm_str = gen.build_asm();
 
