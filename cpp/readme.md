@@ -14,3 +14,5 @@ you can only declare a variable by an int or a reference to another var_name, an
 the only way to see the result of a var declaration is to exit with the value of the var, in the console after executing the "finished_product" file (it is the file that was compiled then linked), you can type "echo $?" to see the code of exit of the last program that was executed
 
 file extension is .shyt, but it doesn't matter right now as the compiler will read any files that you point to, if it exists
+
+i've put semi-colons in the exemple .shyt, and the compiler will make token when encountering a semi-colon, but at this point you could just replace them with a space : ' '. Cause the parser will not look for a semi-colons at the end of instructions (will do in the future)
