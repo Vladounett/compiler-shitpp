@@ -13,7 +13,7 @@ class Parser{
 
     public:
 
-        Parser(std::vector<Token>& tokens_set);
+        Parser(std::vector<Token>& tokens_set, std::vector<short>& no_tokens_line_set);
         void parse();
         std::vector<Node_holder>* get_nodes();
         std::vector<std::string>* get_known_var();
@@ -21,14 +21,18 @@ class Parser{
 
     private:
 
+        std::vector<short> no_tokens_line;
         std::vector<Token> tokens;
         std::vector<Node_holder> nodes;
         Node_expr parse_expr();
         int current_index;
+        short current_line;
+        short current_token;
         Token get_token();
         bool tokens_current_token_exist();
         std::vector<std::string> known_var;
         bool doesVarAlreadyDeclared(std::string);
+        void print_at();
 
 };
 

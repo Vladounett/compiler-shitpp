@@ -2,6 +2,7 @@
 #define NODES_DEF
 
 #include "Token.hpp"
+#include <optional>
 
 struct Node_expr;
 struct Node_ret;
@@ -78,10 +79,11 @@ struct Node_holder : Node{
         this->node_type = type_set;
     }
 
-    Node_expr expr;
-    Node_ret ret;
-    Node_int_decl int_decl;
-    Node_var_ref var_ref;
+    std::optional<Node_expr> expr;
+    std::optional<Node_ret> ret;
+    std::optional<Node_int_decl> int_decl;
+    std::optional<Node_var_ref> var_ref;
+
 };
 
 #endif

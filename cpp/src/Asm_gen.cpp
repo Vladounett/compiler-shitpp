@@ -18,11 +18,11 @@ std::string Asm_gen::build_asm(){
     for(Node_holder n : this->nodes){
         
         if(n.node_type == nodes_type::int_decl){
-            asm_str << gen_node(n.int_decl);
+            asm_str << gen_node(n.int_decl.value());
         }
 
         if(n.node_type == nodes_type::ret){
-            asm_str << gen_node(n.ret);
+            asm_str << gen_node(n.ret.value());
         }
     }
 
@@ -41,7 +41,16 @@ std::string Asm_gen::gen_node(Node_ret n){ //if we got a return node
         asm_str << "    mov rdi, " << "[rsp + " << ((this->stack_size-1-find_var_name_index(n.expr.var_ref.var_name))*8) << "]" << "\n";
 
     }else{
-        asm_str << "    mov rdi, " << n.expr.int_literal.getVal() << "\n";
+
+        if(n.expr.int_literal.getVal() == "0"){
+
+            asm_str << "    xor rdi, rdi\n";
+
+        }else{
+
+            asm_str << "    mov rdi, " << n.expr.int_literal.getVal() << "\n";
+
+        }
     }
 
     asm_str << "    syscall\n";

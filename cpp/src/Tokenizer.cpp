@@ -8,6 +8,8 @@ Tokenizer::Tokenizer(std::string& str_set){
     //this->flag_is_word_correct = false;
     this->flag_space_decl = false;
     this->flag_word_found = false;
+    this->line_counter = 0;
+    this->tokens_on_line = 0;
 }
 
 std::vector<Token> Tokenizer::getTokens(){
@@ -15,6 +17,8 @@ std::vector<Token> Tokenizer::getTokens(){
 }
 
 void Tokenizer::push(char c){
+
+    //std::cout << "char c : " << c << ", (int) char c : " << (int) c << std::endl;
 
     //std::cout << "char : " << c << std::endl;
     //std::cout << "last_char : " << last_char << std::endl;
@@ -24,7 +28,7 @@ void Tokenizer::push(char c){
         buffer.clear();
         std::cout << "char : EOF" << std::endl;
 
-    }else if(std::isalpha(c)){ //if letter, if it was a space before, we know the word we are reading is not an int literal
+    }else if(std::isalpha(c) && c != 10){ //if letter, if it was a space before, we know the word we are reading is not an int literal
                          //if it was not a space but a digit before then we know that what we are reading is not an int literal.
         buffer.push_back(c);
 
@@ -54,11 +58,12 @@ void Tokenizer::push(char c){
 
     }else if(c == '='){ //if it's an equal we get a equal token
 
-        this->tokens.push_back(Token(TokenType::equal, "="));
+        //this->tokens.push_back(Token(TokenType::equal, "="));
+        push_token(Token(TokenType::equal, "="));
         buffer.clear();
         this->last_char = c;
 
-    }else if(std::isspace(c) || c == ';'){
+    }else if(std::isspace(c) && c != 10 || c == ';'){
 
         this->flag_word_found = false;
 
@@ -67,21 +72,24 @@ void Tokenizer::push(char c){
         
         if(word == TOKENS_VALUES[VAL_OF_EXIT]){
 
-            this->tokens.push_back(Token(TokenType::_return, "eexit"));
+            //this->tokens.push_back(Token(TokenType::_return, "eexit"));
+            push_token(Token(TokenType::_return, "eexit"));
             this->flag_word_found = true;
             this->flag_space_decl = false;
             this->flag_is_int_literal = false;
 
         }else if(this->flag_is_int_literal){
 
-            this->tokens.push_back(Token(TokenType::int_literal, word));
+            //this->tokens.push_back(Token(TokenType::int_literal, word));
+            push_token(Token(TokenType::int_literal, word));
             this->flag_word_found = true;
             this->flag_space_decl = false;
             this->flag_is_int_literal = false;
 
         }else if(word == TOKENS_VALUES[VAL_OF_DECL]){
 
-            this->tokens.push_back(Token(TokenType::int_decl, "i delcaree"));
+            //this->tokens.push_back(Token(TokenType::int_decl, "i delcaree"));
+            push_token(Token(TokenType::int_decl, "i delcaree"));
             this->flag_word_found = true;
             this->flag_space_decl = false;
             this->flag_is_int_literal = false;
@@ -100,6 +108,7 @@ void Tokenizer::push(char c){
             }else if(this->flag_space_decl){ //if we already skipped clearing the buffer last time it was a space, then we throw an error because it mean it is not a recognized word
 
                 std::cerr << "Error : bad word >> " << word << " << wtf is that supposed to mean ???" << std::endl;
+                std::cerr << "at line : " << this->line_counter+1 << ", word : " << this->tokens_on_line+1 << std::endl;
                 exit(EXIT_FAILURE);
 
             }else{ //it could be a var_name so we verify if it could be a valid var_name then we create the token if yes, the parser will see himself if the syntax is valid or nah 
@@ -109,7 +118,8 @@ void Tokenizer::push(char c){
                     this->tokens.push_back(Token(TokenType::var_name, word));
 
                     if(c == ';'){ //if its a semicolon, then we juste create a token semicolon
-                        this->tokens.push_back(Token(TokenType::semi_col, ";"));
+                        //this->tokens.push_back(Token(TokenType::semi_col, ";"));
+                        push_token(Token(TokenType::semi_col, ";"));
                         //std::cout << "semicolon" << std::endl;
                     }
                     
@@ -133,8 +143,15 @@ void Tokenizer::push(char c){
 
             this->last_char = c;
             buffer.clear();
+
         }
 
+    }else if(c == 10){
+
+        this->no_tokens_line.push_back(this->tokens_on_line);
+        this->line_counter++;
+        this->tokens_on_line = 0;
+    
     }else{
 
         std::cerr << "Erreur : bad char >> " << c << " << wtf is this ??" << std::endl;
@@ -147,4 +164,14 @@ void Tokenizer::push(char c){
 std::string Tokenizer::convert_vector_to_string(char* to_convert, int vector_size){
     std::string res(to_convert, vector_size);
     return res;
+}
+
+void Tokenizer::push_token(Token token_p){
+
+    this->tokens.push_back(token_p);
+    this->tokens_on_line++;
+}
+
+std::vector<short> Tokenizer::getNo_token_line(){
+    return this->no_tokens_line;
 }

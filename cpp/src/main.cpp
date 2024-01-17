@@ -11,7 +11,7 @@
 #include "Asm_gen.hpp"
 
 //Defining a function that will tokenize the file
-std::vector<Token> find_tokens(std::string& str){
+Tokenizer find_tokens(std::string& str){
 
     Tokenizer tokenizer = Tokenizer(str);
 
@@ -21,7 +21,7 @@ std::vector<Token> find_tokens(std::string& str){
         }
     }
 
-    return tokenizer.getTokens();
+    return tokenizer;
 }
 
 
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
         std::string line;
 
         while(std::getline(fileToRead, line)){
-            total << line;
+            total << line << '\n';
         }
 
 
@@ -70,7 +70,9 @@ int main(int argc, char* argv[]){
     //we got a string, now we want tokens
     //so let's get tokens   
 
-    std::vector<Token> valid_tokens = find_tokens(totalStr);
+    Tokenizer tokenizer = find_tokens(totalStr);
+    std::vector<Token> valid_tokens = tokenizer.getTokens();
+    std::vector<short> no_tokens_line = tokenizer.getNo_token_line();
 
     //Now we parse it
 
@@ -78,7 +80,7 @@ int main(int argc, char* argv[]){
         std::cout << "token : " << t.getVal() << std::endl;
     }*/
 
-    Parser parser = Parser(valid_tokens);
+    Parser parser = Parser(valid_tokens, no_tokens_line);
 
     parser.parse();
 

@@ -1,8 +1,11 @@
 #include "Parser.hpp"
 
-Parser::Parser(std::vector<Token>& tokens_set){
+Parser::Parser(std::vector<Token>& tokens_set, std::vector<short>& no_tokens_line_set){
     this->tokens = tokens_set;
     this->current_index = 0;
+    this->no_tokens_line = no_tokens_line_set;
+    this->current_line = 0;
+    this->current_token = 0;
 }
 
 //Parse with the tokens given
@@ -30,6 +33,7 @@ void Parser::parse(){
 
             if(this->current_index + 1 > this->tokens.size()){
                 std::cerr << "Error : parser out of range" << std::endl;
+                print_at();
                 exit(EXIT_FAILURE);
             }
 
@@ -37,6 +41,7 @@ void Parser::parse(){
 
             if(nextToken_var_name.getType() != TokenType::var_name){ //we got a key word to declare an int, so now we check if the next token is a var_name, if not we quit
                 std::cerr << "Error : var name expected >> " << nextToken_var_name.getVal() << " << huh huh ??" << std::endl;
+                print_at();
                 exit(EXIT_FAILURE);
             }
 
@@ -44,6 +49,7 @@ void Parser::parse(){
 
             if(nextToken_equal.getType() != TokenType::equal){
                 std::cerr << "Error : = expected >> " << nextToken_equal.getVal() << " << huh huh ??" << std::endl; //we got a var_name as expected before, now we check that the next token is an equel, we quit if else
+                print_at();
                 exit(EXIT_FAILURE);
             }
 
@@ -53,6 +59,7 @@ void Parser::parse(){
 
             if(doesVarAlreadyDeclared(node_int.var_name)){ //verify if var_name is already declared
                 std::cerr << "Error : var_name already declared >> " << node_int.var_name << " << this already exist" << std::endl;
+                print_at();
                 exit(EXIT_FAILURE);
             } 
 
@@ -77,6 +84,7 @@ Node_expr Parser::parse_expr(){
 
     if(this->current_index + 1 > this->tokens.size()){
         std::cerr << "Error : parser out of range" << std::endl;
+        print_at();
         exit(EXIT_FAILURE);
     }
 
@@ -91,6 +99,7 @@ Node_expr Parser::parse_expr(){
 
         if(res.int_literal.getType() == TokenType::null){
             std::cerr << "Error :: null token" << std::endl;
+            print_at();
             exit(EXIT_FAILURE);
         }
 
@@ -106,6 +115,7 @@ Node_expr Parser::parse_expr(){
         }else{ //if the var_name is not known from the parser, then we throw an error
 
             std::cerr << "Error : unknown var_name >> " << current_t.getVal() << " << unknown shit" << std::endl;
+            print_at();
             exit(EXIT_FAILURE);
 
         }
@@ -113,6 +123,7 @@ Node_expr Parser::parse_expr(){
     }else{
 
         std::cerr << "Error : invalid token >> " << current_t.getVal() << " << icant fr" << std::endl;
+        print_at();
         exit(EXIT_FAILURE);
         
     }
@@ -127,6 +138,21 @@ Token Parser::get_token(){
     
     Token res = this->tokens.at(this->current_index);
     this->current_index++;
+
+    //std::cout << "current_line : " << current_line << std::endl;
+
+    if(this->current_token + 1 > this->no_tokens_line[this->current_line]){
+
+        this->current_line++;
+        this->current_token = 0;
+
+    }else{
+
+        this->current_token++;
+
+    }
+
+
     return res;
 
 }
@@ -164,5 +190,11 @@ bool Parser::doesVarAlreadyDeclared(std::string str){
     }else{
         return true;
     }
+
+}
+
+void Parser::print_at(){
+
+    std::cerr << "at line : " << this->current_line << ", word : " << this->current_token << std::endl;
 
 }
