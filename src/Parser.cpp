@@ -1,11 +1,11 @@
 #include "Parser.hpp"
 
-Parser::Parser(std::vector<Token>& tokens_set, std::vector<short>& no_tokens_line_set){
+Parser::Parser(std::vector<Token>& tokens_set){
     this->tokens = tokens_set;
     this->current_index = 0;
-    this->no_tokens_line = no_tokens_line_set;
     this->current_line = 0;
     this->current_token = 0;
+    this->lastToken = Token(TokenType::null, "null", -1, -1);
 }
 
 //Parse with the tokens given
@@ -114,7 +114,7 @@ Node_expr Parser::parse_expr(){
 
         }else{ //if the var_name is not known from the parser, then we throw an error
 
-            std::cerr << "Error : unknown var_name >> " << current_t.getVal() << " << unknown shit" << std::endl;
+            std::cerr << "Error : unknown var_name >> " << current_t.getVal() << " << unknown shyt variable" << std::endl;
             print_at();
             exit(EXIT_FAILURE);
 
@@ -134,28 +134,15 @@ Node_expr Parser::parse_expr(){
 
 //Return the token at the current index and increment the index
 
-Token Parser::get_token(){
-    
-    Token res = this->tokens.at(this->current_index);
-    this->current_index++;
-
-    //std::cout << "current_line : " << current_line << std::endl;
-
-    if(this->current_token + 1 > this->no_tokens_line[this->current_line]){
-
-        this->current_line++;
-        this->current_token = 0;
-
-    }else{
-
-        this->current_token++;
-
+Token Parser::get_token() {
+    if (current_index >= tokens.size()) {
+        std::cerr << "Error : unexpected end of input" << std::endl;
+        std::exit(EXIT_FAILURE);
     }
-
-
-    return res;
-
+    this->lastToken = tokens[current_index];
+    return tokens[current_index++];
 }
+
 
 //Return true if the current index is within the length of the vector of tokens
 
@@ -195,6 +182,6 @@ bool Parser::doesVarAlreadyDeclared(std::string str){
 
 void Parser::print_at(){
 
-    std::cerr << "at line : " << this->current_line << ", word : " << this->current_token << std::endl;
+    std::cerr << "at line : " << this->lastToken.getLineIndex() << ", word : " << this->lastToken.getColumnIndex() << std::endl;
 
 }

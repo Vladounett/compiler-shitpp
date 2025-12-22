@@ -1,5 +1,6 @@
-i delcaree y = 4;
-i delcaree tt = 9;
-i delcaree x = tt;
-i delcaree P = 9;
-eexit x;
+i delcaree a = 10;
+i delcaree b = a;
+i delcaree c = b;
+i delcaree d = c;
+i delcaree e = d;
+eexit e;

@@ -12,10 +12,12 @@ std::string Asm_gen::build_asm(){
 
     std::stringstream asm_str;
 
+    asm_str << "section .text\n";
     asm_str << "global _start\n";
     asm_str << "_start:\n";
 
-    for(Node_holder n : this->nodes){
+
+    for(Node_holder &n : this->nodes){
         
         if(n.node_type == nodes_type::int_decl){
             asm_str << gen_node(n.int_decl.value());

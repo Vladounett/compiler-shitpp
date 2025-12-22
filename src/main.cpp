@@ -16,9 +16,7 @@ Tokenizer find_tokens(std::string& str){
     Tokenizer tokenizer = Tokenizer(str);
 
     for(char c : str){
-        if(c != EOF){
-            tokenizer.push(c);
-        }
+        tokenizer.push(c);
     }
 
     return tokenizer;
@@ -72,7 +70,6 @@ int main(int argc, char* argv[]){
 
     Tokenizer tokenizer = find_tokens(totalStr);
     std::vector<Token> valid_tokens = tokenizer.getTokens();
-    std::vector<short> no_tokens_line = tokenizer.getNo_token_line();
 
     //Now we parse it
 
@@ -80,7 +77,7 @@ int main(int argc, char* argv[]){
         std::cout << "token : " << t.getVal() << std::endl;
     }*/
 
-    Parser parser = Parser(valid_tokens, no_tokens_line);
+    Parser parser = Parser(valid_tokens);
 
     parser.parse();
 
