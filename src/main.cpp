@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
     fb.build_file(asm_str);
 
     system("nasm -f elf64 output/finished_product.asm");
-    system("ld output/finished_product.o -o output/finished_product");
+    system("ld output/finished_product.o -o output/finished_product.out");
 
     return 0;
 }

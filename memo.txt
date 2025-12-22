@@ -1,0 +1,3 @@
+compiler -> ./compilershitpp.out working_exemple.shyt
+execution -> ./output/finished_product
+last return code -> echo $?
