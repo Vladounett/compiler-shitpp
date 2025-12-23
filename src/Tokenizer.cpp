@@ -1,5 +1,5 @@
 #include "Tokenizer.hpp"
-#include "TokenType_Str.hpp"
+#include "TokenType_Map.hpp"
 
 Tokenizer::Tokenizer(std::string &str_set){
     this->str = str_set;
@@ -65,7 +65,7 @@ void Tokenizer::push(char c){
         //whitespace or semicolons detected, so we check if the previous word is a token type
         std::string word = convert_vector_to_string(buffer.data(), buffer.size());
         
-        if(word == TOKENS_VALUES[VAL_OF_EXIT]){
+        if(word == TOKENS_VALUES.at(TokenType::_return)){
 
             //this->tokens.push_back(Token(TokenType::_return, "eexit"));
             push_token(Token(TokenType::_return, "eexit", this->line_counter, this->tokens_on_line));
@@ -81,7 +81,7 @@ void Tokenizer::push(char c){
             this->flag_space_decl = false;
             this->flag_is_int_literal = false;
 
-        }else if(word == TOKENS_VALUES[VAL_OF_DECL]){
+        }else if(word == TOKENS_VALUES.at(TokenType::int_decl)){
 
             //this->tokens.push_back(Token(TokenType::int_decl, "i delcaree"));
             push_token(Token(TokenType::int_decl, "i delcaree", this->line_counter, this->tokens_on_line));
