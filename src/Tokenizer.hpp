@@ -11,6 +11,7 @@ class Tokenizer{
         Tokenizer(std::string& str_set);
         std::vector<Token> getTokens();
         void push(char c);
+        void debugTokens();
 
     private:
 

@@ -12,7 +12,7 @@ Parser::Parser(std::vector<Token>& tokens_set){
 
 void Parser::parse(){
 
-    while(tokens_current_token_exist()){
+    /**while(tokens_current_token_exist()){
 
         Token t = get_token();
         //std::cout <<t.getVal() << std::endl;
@@ -74,7 +74,7 @@ void Parser::parse(){
 
         }
 
-    }
+    }**/
 
 }
 
@@ -82,7 +82,7 @@ void Parser::parse(){
 
 Node_expr Parser::parse_expr(){
 
-    if(this->current_index + 1 > this->tokens.size()){
+    /**if(this->current_index + 1 > this->tokens.size()){
         std::cerr << "Error : parser out of range" << std::endl;
         print_at();
         exit(EXIT_FAILURE);
@@ -129,14 +129,14 @@ Node_expr Parser::parse_expr(){
     }
 
     return res;
-
+**/
 }
 
 //Return the token at the current index and increment the index
 
 Token Parser::get_token() {
     if (current_index >= tokens.size()) {
-        std::cerr << "Error : unexpected end of input" << std::endl;
+        std::cerr << "Error : current_index greater than how many tokens exist (how is it possible ??)" << std::endl;
         std::exit(EXIT_FAILURE);
     }
     this->lastToken = tokens[current_index];
@@ -147,41 +147,32 @@ Token Parser::get_token() {
 //Return true if the current index is within the length of the vector of tokens
 
 bool Parser::tokens_current_token_exist(){
-
     if(this->current_index < this->tokens.size()){
         return true;
     }else{
         return false;
     }
-
 }
 
 //Return the nodes knowns of the parser
-
 std::vector<Node_holder>* Parser::get_nodes(){
     return &this->nodes;
 }
 
 //Return the vector of known var
-
 std::vector<std::string>* Parser::get_known_var(){
     return &this->known_var;
 }
 
-bool Parser::doesVarAlreadyDeclared(std::string str){
-
+bool Parser::isVarAlreadyDeclared(std::string str){
     auto it = std::find(this->known_var.begin(), this->known_var.end(), str);
-
     if(it == this->known_var.end()){
         return false;
     }else{
         return true;
     }
-
 }
 
 void Parser::print_at(){
-
     std::cerr << "at line : " << this->lastToken.getLineIndex() << ", word : " << this->lastToken.getColumnIndex() << std::endl;
-
 }

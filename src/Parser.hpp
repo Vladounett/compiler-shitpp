@@ -31,7 +31,7 @@ class Parser{
         Token lastToken;
         bool tokens_current_token_exist();
         std::vector<std::string> known_var;
-        bool doesVarAlreadyDeclared(std::string);
+        bool isVarAlreadyDeclared(std::string);
         void print_at();
 
 };

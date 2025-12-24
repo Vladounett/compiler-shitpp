@@ -4,8 +4,8 @@ YOU NEED NASM INSTALLED AS THE "main.cpp" WILL CALL NASM TO MAKE A ".o" THAT WIL
 For now you can use :
 (ill do a grammar)
 
-i delcaree [var_name] = [expression];
-eexit [expression];
+i declare [var_name] = [expression];
+i am leaving [expression];
 
 [expression] = [int_literral]//[var_name]
 

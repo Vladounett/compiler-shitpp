@@ -1,6 +1,4 @@
-i declare a = 10;
-i declare b = a;
-i declare c = b;
-i declare d = c;
-i declare e = d;
-eexit e;
+i declare a = 10 !
+i declare a1 = a !
+i declare b = a1 !
+i am leaving e !

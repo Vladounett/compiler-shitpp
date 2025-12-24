@@ -4,10 +4,10 @@ SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 compilershitpp: $(OBJ)
-	g++ $(FLAGS) $(OBJ) -o compilershitpp.out
+	g++ $(FLAGS) $(OBJ) -o s++
 
 clean:
-	rm -f src/*.o compiler
+	rm -f src/*.o s++
 
 CC = gcc
 CFLAGS = -Wall -Wextra -g

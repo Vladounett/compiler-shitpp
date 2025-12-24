@@ -8,8 +8,9 @@
 //Key words, but i have clumsy fingers
 
 inline const std::unordered_map<TokenType, std::string> TOKENS_VALUES = {
-    {TokenType::_return, "eexit"},
-    {TokenType::int_decl, "i declare"}
+    {TokenType::_return, "i am leaving"},
+    {TokenType::int_decl, "i declare"},
+    {TokenType::line_ender, "!"}
 };
 
 #endif
