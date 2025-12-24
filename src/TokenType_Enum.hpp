@@ -11,10 +11,4 @@ enum class TokenType{
     null
 };
 
-inline std::string toString(TokenType t){
-    switch(t){
-        case TokenType::_return: return ""; break;
-    }
-}
-
 #endif

@@ -1,6 +1,6 @@
-i delcaree a = 10;
-i delcaree b = 50;
-i delcaree c = 30;
-i delcaree d = 40;
-i delcaree e = 90;
-eexit a;
+i declare a = 10;
+i declare b = a;
+i declare c = b;
+i declare d = c;
+i declare e = d;
+eexit e;

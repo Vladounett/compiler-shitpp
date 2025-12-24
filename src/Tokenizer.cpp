@@ -65,10 +65,12 @@ void Tokenizer::push(char c){
         //whitespace or semicolons detected, so we check if the previous word is a token type
         std::string word = convert_vector_to_string(buffer.data(), buffer.size());
         
+        //std::cout << word << std::endl; 
+
         if(word == TOKENS_VALUES.at(TokenType::_return)){
 
             //this->tokens.push_back(Token(TokenType::_return, "eexit"));
-            push_token(Token(TokenType::_return, "eexit", this->line_counter, this->tokens_on_line));
+            push_token(Token(TokenType::_return, word, this->line_counter, this->tokens_on_line));
             this->flag_word_found = true;
             this->flag_space_decl = false;
             this->flag_is_int_literal = false;
@@ -84,7 +86,7 @@ void Tokenizer::push(char c){
         }else if(word == TOKENS_VALUES.at(TokenType::int_decl)){
 
             //this->tokens.push_back(Token(TokenType::int_decl, "i delcaree"));
-            push_token(Token(TokenType::int_decl, "i delcaree", this->line_counter, this->tokens_on_line));
+            push_token(Token(TokenType::int_decl, word, this->line_counter, this->tokens_on_line));
             this->flag_word_found = true;
             this->flag_space_decl = false;
             this->flag_is_int_literal = false;
@@ -94,7 +96,7 @@ void Tokenizer::push(char c){
         //If it was not a recongnized word, we verifiy :
         if(!this->flag_word_found){
 
-            if(this->last_char == 'i' && !this->flag_space_decl){ //if last char was a i then we dont clear the buffer, beacuse it could be the keyword "i delcaree"
+            if(this->last_char == 'i' && !this->flag_space_decl){ //if last char was a i then we dont clear the buffer, beacuse it could be the keyword "i declare"
 
                 buffer.push_back(' ');
                 this->last_char = c;
