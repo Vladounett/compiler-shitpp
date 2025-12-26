@@ -10,15 +10,6 @@
 #include "Parser.hpp"
 #include "Asm_gen.hpp"
 
-//Defining a function that will tokenize the file
-Tokenizer find_tokens(std::string& str){
-    Tokenizer tokenizer = Tokenizer(str);
-    for(char c : str){
-        tokenizer.push(c);
-    }
-    return tokenizer;
-}
-
 int main(int argc, char* argv[]){
     //If input invalid = error, we don't do anything
     if(argc != 2){
@@ -50,16 +41,17 @@ int main(int argc, char* argv[]){
     //we got a string, now we want tokens
     //so let's get tokens   
 
-    Tokenizer tokenizer = find_tokens(totalStr);
+    Tokenizer tokenizer = Tokenizer(totalStr);
+    tokenizer.tokenize();
     tokenizer.debugTokens();
-    /**std::vector<Token> valid_tokens = tokenizer.getTokens();
 
     //Now we parse it
 
-    Parser parser = Parser(valid_tokens);
-
+    Parser parser = Parser(tokenizer.getTokens());
     parser.parse();
+    parser.debugParsedProgram();
 
+    /*
     Asm_gen gen = Asm_gen(*parser.get_nodes(), *parser.get_known_var());
 
     std::string asm_str = gen.build_asm();
@@ -70,7 +62,7 @@ int main(int argc, char* argv[]){
     fb.build_file(asm_str);
 
     system("nasm -f elf64 output/finished_product.asm");
-    system("ld output/finished_product.o -o output/finished_product.out");**/
+    system("ld output/finished_product.o -o output/finished_product.out");*/
 
     return 0;
 }

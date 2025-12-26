@@ -5,12 +5,19 @@ Tokenizer::Tokenizer(std::string &str_set){
     this->str = str_set;
     this->flag_is_int_literal = false;
     this->last_char = ' ';
-    this->line_counter = 1;
+    this->line_counter = 0;
     this->tokens_on_line = 0;
 }
 
 std::vector<Token> Tokenizer::getTokens(){
     return this->tokens;
+}
+
+void Tokenizer::tokenize(){
+    for(char c : str){
+        this->push(c);
+    }
+    this->push_token(Token(TokenType::eof, "EOF", this->line_counter, this->tokens_on_line));
 }
 
 void Tokenizer::push(char c){
@@ -87,4 +94,5 @@ void Tokenizer::debugTokens(){ //debug the tokens in the console
             std::cout << t.getVal() + "(" + typeToString(t.getType()) + ") ";
         }
     }
+    std::cout << std::endl;
 }

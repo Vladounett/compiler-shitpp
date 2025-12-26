@@ -12,6 +12,7 @@ class Tokenizer{
         std::vector<Token> getTokens();
         void push(char c);
         void debugTokens();
+        void tokenize();
 
     private:
 

@@ -3,69 +3,45 @@
 
 #include "Token.hpp"
 #include <optional>
+#include <variant>
+#include <memory>
 
-struct Node_expr;
-struct Node_ret;
-struct Node_int_decl;
-struct Node_holder;
-struct Node_var_ref;
+struct NodeReturn;
+struct NodeIntDecl;
 
-enum class nodes_type{
-    no_type,
-    expr,
-    _return,
-    int_decl,
-    var_ref,
-    holder
-};
+struct NodeVarRef;
+struct NodeIntLiteral;
 
-struct Node{
-    Node(){
-        this->node_type = nodes_type::no_type;
-    }
-    nodes_type node_type;
-};
+//Expressions
 
-struct Node_var_ref : Node{
-    Node_var_ref(){
-        this->node_type = nodes_type::var_ref;
-    }
+using NodeExpr = std::variant<NodeIntLiteral, NodeVarRef>;
+using NodeExprHandle = std::unique_ptr<NodeExpr>;
+
+//Statements
+
+using NodeStatement = std::variant<NodeReturn, NodeIntDecl>;
+using NodeStatementHandle = std::unique_ptr<NodeStatement>;
+
+/* -------------------------------------------------------------------- */
+
+struct NodeVarRef {
     std::string var_name;
 };
 
-struct Node_expr: Node{
-    Node_expr(){
-        this->node_type = nodes_type::expr;
-        this->is_var_ref = false;
-    }
-    Token int_literal;
-    Node_var_ref var_ref;
-    bool is_var_ref;
+struct NodeIntLiteral {
+    int val;
 };
 
-struct Node_ret : Node{
-    Node_ret(){
-        this->node_type = nodes_type::_return;
-    }
-    Node_expr expr;
+struct NodeReturn {
+    NodeExprHandle val;
 };
 
-struct Node_int_decl : Node{
-    Node_int_decl(){
-        this->node_type = nodes_type::int_decl;
-    }
+struct NodeIntDecl {
     std::string var_name;
-    Node_expr expr;
+    NodeExprHandle val;
 };
 
-struct Node_holder : Node{
-    Node_holder(nodes_type type_set){
-        this->node_type = type_set;
-    }
-    std::optional<Node_expr> expr;
-    std::optional<Node_ret> ret;
-    std::optional<Node_int_decl> int_decl;
-    std::optional<Node_var_ref> var_ref;
-};
+template<class... Ts> struct overload : Ts... { using Ts::operator()...; };
+template<class... Ts> overload(Ts...) -> overload<Ts...>;
 
 #endif

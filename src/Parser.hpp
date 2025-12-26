@@ -13,27 +13,35 @@ class Parser{
 
     public:
 
-        Parser(std::vector<Token>& tokens_set);
+        Parser(std::vector<Token> tokens_set);
         void parse();
-        std::vector<Node_holder>* get_nodes();
-        std::vector<std::string>* get_known_var();
-
+        void debugParsedProgram();
 
     private:
 
-        std::vector<Token> tokens;
-        std::vector<Node_holder> nodes;
-        Node_expr parse_expr();
-        int current_index;
-        short current_line;
-        short current_token;
-        Token get_token();
-        Token lastToken;
-        bool tokens_current_token_exist();
-        std::vector<std::string> known_var;
-        bool isVarAlreadyDeclared(std::string);
-        void print_at();
+        NodeStatementHandle parseStatement();
+        NodeStatementHandle parseReturn();
+        NodeStatementHandle parseIntDecl();
 
+        NodeExprHandle parseExpr();
+
+        std::vector<std::string> known_var;
+        std::vector<Token> tokens;
+        short currentLine;
+        short currentTokenIndex;
+        Token& peek();
+        Token& advance();
+        Token& consume(TokenType type, std::string errMsg);
+        Token& lookAhead(short offset);
+        bool isVarAlreadyDeclared(std::string);
+        bool check(TokenType type);
+        bool check(TokenType type, std::string str);
+        bool checkSequence(std::string str1, std::string str2);
+        bool checkSequence(std::string str1, std::string str2, std::string str3);
+
+        std::vector<NodeStatementHandle> parsedProgram;
+        void debugStatement(NodeStatement &nsh);
+        void debugExpr(NodeExpr &ndh);
 };
 
 
