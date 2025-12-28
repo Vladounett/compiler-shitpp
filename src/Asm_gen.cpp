@@ -1,99 +1,82 @@
 #include "Asm_gen.hpp"
+#include <variant>
 
-/*Asm_gen::Asm_gen(std::vector<Node_holder>& nodes_set, std::vector<std::string>& known_var_set){
+Asm_gen::Asm_gen(std::vector<NodeStatementHandle>& nodes){
 
-    this->known_var = known_var_set;
-    this->nodes = nodes_set;
+    this->nodes = std::move(nodes);
     this->stack_size = 0;
 
 }
 
-std::string Asm_gen::build_asm(){
+void Asm_gen::build_asm(){
 
-    std::stringstream asm_str;
+    int totalOffset = this->varDiscovery();
 
-    asm_str << "section .text\n";
-    asm_str << "global _start\n";
-    asm_str << "_start:\n";
+    write("BITS 64", 0);
+    write("section .text", 0);
+    write("global _start", 0);
+    write("_start:", 0);
 
+    write("push rbp", 1);
+    write("mov rbp, rsp", 1);
+    write("sub rsp, " + std::to_string(totalOffset), 1);
 
-    for(Node_holder &n : this->nodes){
-        
-        if(n.node_type == nodes_type::int_decl){
-            asm_str << gen_node(n.int_decl.value());
-        }
-
-        if(n.node_type == nodes_type::ret){
-            asm_str << gen_node(n.ret.value());
-        }
+    for(NodeStatementHandle& nsh : this->nodes){
+        write("", 1);
+        genStatement(*nsh);
     }
-
-    return asm_str.str();
-
 }
 
-std::string Asm_gen::gen_node(Node_ret n){ //if we got a return node
-
-    std::stringstream asm_str;
-
-    asm_str << "    mov rax, 60\n" ;
-
-    if(n.expr.is_var_ref){
-        
-        asm_str << "    mov rdi, " << "[rsp + " << ((this->stack_size-1-find_var_name_index(n.expr.var_ref.var_name))*8) << "]" << "\n";
-
-    }else{
-
-        if(n.expr.int_literal.getVal() == "0"){
-
-            asm_str << "    xor rdi, rdi\n";
-
-        }else{
-
-            asm_str << "    mov rdi, " << n.expr.int_literal.getVal() << "\n";
-
+void Asm_gen::genStatement(NodeStatement& ns){
+    std::visit(overload{
+        [this](NodeReturn& ret) {
+            genExpr(*ret.val);
+            write("mov rdi, rax", 1);
+            write("mov rax, 60", 1);
+            write("syscall", 1);
+        },
+        [this](NodeIntDecl& decl) {
+            genExpr(*decl.val);
+            write("mov qword [rbp - " + std::to_string(this->varTable[decl.var_name].offset) + "], rax", 1);
+            this->stack_size++;
         }
-    }
-
-    asm_str << "    syscall\n";
-
-    return asm_str.str();
-
+    }, ns);
 }
 
-std::string Asm_gen::gen_node(Node_int_decl n){ //if we got an int declaration
-
-    std::stringstream asm_str;
-
-    if(n.expr.is_var_ref){
-        
-        asm_str << "    mov rax, " << "[rsp + " << ((this->stack_size-1-find_var_name_index(n.expr.var_ref.var_name))*8) << "]" << "\n";
-
-    }else{
-        asm_str << "    mov rax, " << n.expr.int_literal.getVal() << "\n";
-    }
-
-    asm_str << "    push rax\n";
-
-    this->stack_size++;
-
-    return asm_str.str();
-
+void Asm_gen::genExpr(NodeExpr& ne){
+    std::visit(overload{
+        [this](NodeVarRef& varRef) {
+            write("mov rax, [rbp - " + std::to_string(this->varTable[varRef.var_name].offset) + "]", 1);
+        },
+        [this](NodeIntLiteral& intLit) {
+            write("mov rax, " + std::to_string(intLit.val), 1);
+        }
+    }, ne);
 }
 
-short Asm_gen::find_var_name_index(std::string str){
+void Asm_gen::write(std::string line, short indentIndex){
+    indentIndex *= 4;
+    std::string indent(indentIndex, ' ');
+    this->built_asm << indent << line << std::endl;
+}
 
-    auto it = std::find(this->known_var.begin(), this->known_var.end(), str);
+std::string Asm_gen::getBuiltAsm(){
+    return this->built_asm.str();
+}
 
-    if(it != this->known_var.end()){
+int Asm_gen::varDiscovery(){
+    int offset = 0;
 
-        return std::distance(this->known_var.begin(), it);
-
-    }else{
-
-        std::cerr << "Error : asm_gen couldn't find var_name >> " << str << " << how is it even possible ????" << std::endl; 
-        exit(EXIT_FAILURE);
-
+    for(NodeStatementHandle& nsh : this->nodes){
+        std::visit(overload{
+            [&](NodeReturn& ret) {},
+            [this, &offset](NodeIntDecl& decl) {offset+=8; this->varTable[decl.var_name] = {offset};}
+        }, *nsh);
     }
 
-}*/
+    if(offset % 16 != 0){
+        offset += 8;
+    }
+
+    return offset;
+}

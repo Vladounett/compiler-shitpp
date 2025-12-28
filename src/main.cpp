@@ -43,26 +43,26 @@ int main(int argc, char* argv[]){
 
     Tokenizer tokenizer = Tokenizer(totalStr);
     tokenizer.tokenize();
+    std::cout << "----- tokens -----" << std::endl;
     tokenizer.debugTokens();
 
     //Now we parse it
 
     Parser parser = Parser(tokenizer.getTokens());
     parser.parse();
+    std::cout << "----- parsedProgram -----" << std::endl;
     parser.debugParsedProgram();
 
-    /*
-    Asm_gen gen = Asm_gen(*parser.get_nodes(), *parser.get_known_var());
-
-    std::string asm_str = gen.build_asm();
-
-    std::cout << asm_str << std::endl;
+    Asm_gen gen = Asm_gen(parser.getParsedProgram());
+    gen.build_asm();
+    std::cout << "----- builtASM -----" << std::endl;
+    std::cout << gen.getBuiltAsm() << std::endl;
 
     File_Builder fb = File_Builder();
-    fb.build_file(asm_str);
+    fb.build_file(gen.getBuiltAsm());
 
     system("nasm -f elf64 output/finished_product.asm");
-    system("ld output/finished_product.o -o output/finished_product.out");*/
+    system("ld output/finished_product.o -o output/finished_product.out");
 
     return 0;
 }

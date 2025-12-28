@@ -4,6 +4,7 @@
 Parser::Parser(std::vector<Token> tokens_set){
     this->tokens = tokens_set;
     this->currentTokenIndex = 0;
+    this->returnFlag = false;
 }
 
 void Parser::parse(){
@@ -15,6 +16,10 @@ void Parser::parse(){
             std::cerr << "Error : parseStatement got nullptr" << std::endl;
             exit(EXIT_FAILURE);
         }
+    }
+    if(!returnFlag){
+        std::cerr << "Error : don't you want to leave at some point ?" << std::endl;
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -40,6 +45,7 @@ NodeStatementHandle Parser::parseReturn(){
     NodeExprHandle expr = parseExpr();
     consume(TokenType::line_ender, "Error : line_ender expected");
     if(expr){
+        this->returnFlag = true;
         return std::make_unique<NodeStatement>(NodeReturn{std::move(expr)});
     }else{
         return nullptr;
@@ -62,7 +68,6 @@ NodeStatementHandle Parser::parseIntDecl(){
 }
 
 NodeExprHandle Parser::parseExpr(){
-
     if(check(TokenType::int_literal)){
         return std::make_unique<NodeExpr>(NodeIntLiteral{stoi(this->consume(TokenType::int_literal, "Error : int_literal expected").getVal())});
     }else if(check(TokenType::identifier)){
@@ -141,11 +146,11 @@ void Parser::debugParsedProgram(){
     }
 }
 
-void Parser::debugStatement(NodeStatement &nsh){
+void Parser::debugStatement(NodeStatement &ns){
     std::visit(overload{
         [this](NodeReturn& ret) {std::cout << "Return : "; debugExpr(*ret.val); std::cout << std::endl;},
         [this](NodeIntDecl& decl) {std::cout << "IntDecl : "; debugExpr(*decl.val); std::cout << std::endl;}
-    }, nsh);
+    }, ns);
 }
 
 void Parser::debugExpr(NodeExpr &ndh){
@@ -153,4 +158,8 @@ void Parser::debugExpr(NodeExpr &ndh){
         [](NodeIntLiteral& intLit) {std::cout << "IntLiteral(" << intLit.val << ")";},
         [](NodeVarRef& varRef) {std::cout << "VarRef(" + varRef.var_name + ")";}
     }, ndh);
+}
+
+std::vector<NodeStatementHandle>& Parser::getParsedProgram(){
+    return this->parsedProgram;
 }

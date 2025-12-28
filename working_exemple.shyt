@@ -1,3 +1,6 @@
 i declare a = 10 !
 i declare b = a !
-i am leaving b !
+i declare c = b !
+i declare c1 = c !
+i declare c2=c1!
+i am leaving c2 !

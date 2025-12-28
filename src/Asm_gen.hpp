@@ -6,25 +6,33 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <algorithm>
+#include <unordered_map>
 
 class Asm_gen{
 
-    /*public:
+    public:
 
-        Asm_gen(std::vector<Node_holder>& nodes_set, std::vector<std::string>& known_var_set);
-        std::string build_asm();
+        Asm_gen(std::vector<NodeStatementHandle>& nodes);
 
+        void build_asm();
+
+        std::string getBuiltAsm();
 
     private:
 
-        std::vector<Node_holder> nodes;
-        std::vector<std::string> known_var;
-        std::string gen_node(Node_ret n);
-        std::string gen_node(Node_int_decl n);
-        size_t stack_size;
-        short find_var_name_index(std::string str);*/
+        struct VarInfo{
+            int offset;
+        };
 
+        std::stringstream built_asm;
+        std::vector<NodeStatementHandle> nodes;
+        size_t stack_size;
+        void genStatement(NodeStatement& ns);
+        void genExpr(NodeExpr& ne);
+        void write(std::string line, short indentIndex);
+        int varDiscovery();
+
+        std::unordered_map<std::string, VarInfo> varTable;
 };
 
 
