@@ -2,8 +2,10 @@ YOU NEED NASM ON A LINUX MACHINE
 
 For now you can use :
 
+hello !
 i declare [var_name] = [expression] !
 i am leaving [expression] !
+goodbye !
 
 [expression] = [int_literral]//[var_name]
 

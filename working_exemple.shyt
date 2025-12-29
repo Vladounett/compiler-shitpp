@@ -1,5 +1,5 @@
 hello !
-i declare a = 10 !
+i declare a = 10!
 i declare b = a !
 i declare c = b !
 i declare c1 = c !

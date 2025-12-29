@@ -45,9 +45,12 @@ class Parser{
         bool check(TokenType type, std::string str);
         bool checkSequence(std::initializer_list<std::string> seq);
         bool returnFlag;
+        bool helloFlag;
+        bool goodbyeFlag;
 
         void debugStatement(NodeStatement &nsh);
         void debugExpr(NodeExpr &ndh);
+        void throwError(std::string);
 };
 
 

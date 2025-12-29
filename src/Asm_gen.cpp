@@ -2,10 +2,8 @@
 #include <variant>
 
 Asm_gen::Asm_gen(std::vector<NodeStatementHandle>& nodes){
-
     this->nodes = std::move(nodes);
     this->stack_size = 0;
-
 }
 
 void Asm_gen::build_asm(){
@@ -40,9 +38,9 @@ void Asm_gen::genStatement(NodeStatement& ns){
             write("mov qword [rbp - " + std::to_string(this->varTable[decl.var_name].offset) + "], rax", 1);
             this->stack_size++;
         },
-        [this](NodeProgStart&) {
+        [](NodeProgStart&) {
         },
-        [this](NodeProgEnd&) {
+        [](NodeProgEnd&) {
         }
     }, ns);
 }
@@ -73,7 +71,7 @@ int Asm_gen::varDiscovery(){
 
     for(NodeStatementHandle& nsh : this->nodes){
         std::visit(overload{
-            [&](NodeReturn& ret) {},
+            [](NodeReturn& ret) {},
             [this, &offset](NodeIntDecl& decl) {offset+=8; this->varTable[decl.var_name] = {offset};},
             [](NodeProgStart&) {},
             [](NodeProgEnd&) {}
