@@ -39,6 +39,10 @@ void Asm_gen::genStatement(NodeStatement& ns){
             genExpr(*decl.val);
             write("mov qword [rbp - " + std::to_string(this->varTable[decl.var_name].offset) + "], rax", 1);
             this->stack_size++;
+        },
+        [this](NodeProgStart&) {
+        },
+        [this](NodeProgEnd&) {
         }
     }, ns);
 }
@@ -70,7 +74,9 @@ int Asm_gen::varDiscovery(){
     for(NodeStatementHandle& nsh : this->nodes){
         std::visit(overload{
             [&](NodeReturn& ret) {},
-            [this, &offset](NodeIntDecl& decl) {offset+=8; this->varTable[decl.var_name] = {offset};}
+            [this, &offset](NodeIntDecl& decl) {offset+=8; this->varTable[decl.var_name] = {offset};},
+            [](NodeProgStart&) {},
+            [](NodeProgEnd&) {}
         }, *nsh);
     }
 

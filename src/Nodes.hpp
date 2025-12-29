@@ -8,6 +8,8 @@
 
 struct NodeReturn;
 struct NodeIntDecl;
+struct NodeProgStart;
+struct NodeProgEnd;
 
 struct NodeVarRef;
 struct NodeIntLiteral;
@@ -19,7 +21,7 @@ using NodeExprHandle = std::unique_ptr<NodeExpr>;
 
 //Statements
 
-using NodeStatement = std::variant<NodeReturn, NodeIntDecl>;
+using NodeStatement = std::variant<NodeReturn, NodeIntDecl, NodeProgStart, NodeProgEnd>;
 using NodeStatementHandle = std::unique_ptr<NodeStatement>;
 
 /* -------------------------------------------------------------------- */
@@ -34,6 +36,14 @@ struct NodeIntLiteral {
 
 struct NodeReturn {
     NodeExprHandle val;
+};
+
+struct NodeProgStart{
+
+};
+
+struct NodeProgEnd{
+
 };
 
 struct NodeIntDecl {

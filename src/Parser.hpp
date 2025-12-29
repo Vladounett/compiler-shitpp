@@ -43,8 +43,7 @@ class Parser{
         bool isVarAlreadyDeclared(std::string);
         bool check(TokenType type);
         bool check(TokenType type, std::string str);
-        bool checkSequence(std::string str1, std::string str2);
-        bool checkSequence(std::string str1, std::string str2, std::string str3);
+        bool checkSequence(std::initializer_list<std::string> seq);
         bool returnFlag;
 
         void debugStatement(NodeStatement &nsh);

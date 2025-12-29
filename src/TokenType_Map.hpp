@@ -10,7 +10,9 @@
 inline const std::unordered_map<TokenType, std::string> TOKENS_VALUES = {
     {TokenType::_return, "i am leaving"},
     {TokenType::int_decl, "i declare"},
-    {TokenType::line_ender, "!"}
+    {TokenType::line_ender, "!"},
+    {TokenType::programStart, "hello"},
+    {TokenType::programEnd, "goodbye"}
 };
 
 #endif

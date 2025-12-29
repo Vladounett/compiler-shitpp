@@ -25,15 +25,23 @@ void Parser::parse(){
 
 NodeStatementHandle Parser::parseStatement(){
 
-    if(checkSequence("i", "declare")){
+    if(checkSequence({"i", "declare"})){
         advance();
         advance();
         return parseIntDecl();
-    }else if(checkSequence("i", "am", "leaving")){
+    }else if(checkSequence({"i", "am", "leaving"})){
         advance();
         advance();
         advance();
         return parseReturn();
+    }else if(checkSequence({"hello"})){
+        advance();
+        consume(TokenType::line_ender, "Error : line_ender expected");
+        return std::make_unique<NodeStatement>(NodeProgStart{});
+    }else if(checkSequence({"goodbye"})){
+        advance();
+        consume(TokenType::line_ender, "Error : line_ender expected");
+        return std::make_unique<NodeStatement>(NodeProgEnd{});
     }
 
     std::cerr << "Error : expected statement" << std::endl;
@@ -124,20 +132,15 @@ bool Parser::check(TokenType type, std::string str){
     return this->peek().getType() == type && peek().getVal() == str;
 }
 
-bool Parser::checkSequence(std::string str1, std::string str2){
-    if(this->peek().getVal() == str1 && this->lookAhead(1).getVal() == str2){
-        return true;
-    }else{
-        return false;
+bool Parser::checkSequence(std::initializer_list<std::string> seq) {
+    size_t i = 0;
+    for (const auto& s : seq) {
+        if (this->lookAhead(i).getVal() != s) {
+            return false;
+        }
+        ++i;
     }
-}
-
-bool Parser::checkSequence(std::string str1, std::string str2, std::string str3){
-    if(this->peek().getVal() == str1 && this->lookAhead(1).getVal() == str2 && this->lookAhead(2).getVal() == str3){
-        return true;
-    }else{
-        return false;
-    }
+    return true;
 }
 
 void Parser::debugParsedProgram(){
@@ -149,7 +152,9 @@ void Parser::debugParsedProgram(){
 void Parser::debugStatement(NodeStatement &ns){
     std::visit(overload{
         [this](NodeReturn& ret) {std::cout << "Return : "; debugExpr(*ret.val); std::cout << std::endl;},
-        [this](NodeIntDecl& decl) {std::cout << "IntDecl : "; debugExpr(*decl.val); std::cout << std::endl;}
+        [this](NodeIntDecl& decl) {std::cout << "IntDecl : "; debugExpr(*decl.val); std::cout << std::endl;},
+        [](NodeProgStart&) {std::cout << "ProgStart" << std::endl;},
+        [](NodeProgEnd&) {std::cout << "ProgEnd" << std::endl;}
     }, ns);
 }
 

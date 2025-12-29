@@ -11,6 +11,8 @@ enum class TokenType{
     identifier,
     equal,
     eof,
+    programStart,
+    programEnd,
     null
 };
 
@@ -24,6 +26,8 @@ inline std::string typeToString(TokenType t){
         case TokenType::line_ender: return "!";
         case TokenType::int_literal: return "int_literal";
         case TokenType::eof: return "EOF";
+        case TokenType::programStart: return "programStart";
+        case TokenType::programEnd: return "programEnd";
     }
     return "unknown_type";
 };
