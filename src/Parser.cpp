@@ -4,9 +4,6 @@
 Parser::Parser(std::vector<Token> tokens_set){
     this->tokens = tokens_set;
     this->currentTokenIndex = 0;
-    this->returnFlag = false;
-    this->helloFlag = false;
-    this->goodbyeFlag = false;
 }
 
 void Parser::parse(){
@@ -17,15 +14,6 @@ void Parser::parse(){
         }else{
             this->throwError("Error : expected statement");
         }
-    }
-    if(!returnFlag){
-        this->throwError("Error : don't you want to leave at some point ?");
-    }
-    if(!helloFlag){
-        this->throwError("Error : hello maybe ?");
-    }
-    if(!goodbyeFlag){
-        this->throwError("Error : no goodbye ?");
     }
 }
 
@@ -43,12 +31,10 @@ NodeStatementHandle Parser::parseStatement(){
     }else if(checkSequence({"hello"})){
         advance();
         consume(TokenType::line_ender, "Error : line_ender expected");
-        this->helloFlag = true;
         return std::make_unique<NodeStatement>(NodeProgStart{});
     }else if(checkSequence({"goodbye"})){
         advance();
         consume(TokenType::line_ender, "Error : line_ender expected");
-        this->goodbyeFlag = true;
         return std::make_unique<NodeStatement>(NodeProgEnd{});
     }
 
@@ -59,7 +45,6 @@ NodeStatementHandle Parser::parseReturn(){
     NodeExprHandle expr = parseExpr();
     consume(TokenType::line_ender, "Error : line_ender expected");
     if(expr){
-        this->returnFlag = true;
         return std::make_unique<NodeStatement>(NodeReturn{std::move(expr)});
     }else{
         return nullptr;
@@ -71,8 +56,6 @@ NodeStatementHandle Parser::parseIntDecl(){
     consume(TokenType::equal, "Error : equal expected");
     NodeExprHandle expr = parseExpr();
     consume(TokenType::line_ender, "Error : line_ender expected");
-
-    this->known_var.push_back(var_name.getVal());
 
     if(expr){
         return std::make_unique<NodeStatement>(NodeIntDecl{var_name.getVal(), std::move(expr)});
@@ -88,14 +71,10 @@ NodeExprHandle Parser::parseExpr(){
             {stoi(this->consume(TokenType::int_literal, "Error : int_literal expected").getVal())}
         );
     }else if(check(TokenType::identifier)){
-        if(this->isVarAlreadyDeclared(this->peek().getVal())){
-            return std::make_unique<NodeExpr>
-            (NodeVarRef
-                {this->consume(TokenType::identifier, "Error : identifier expected").getVal()}
-            );
-        }else{
-            this->throwError("Error : unknown var_name : " + this->peek().getVal());
-        }
+        return std::make_unique<NodeExpr>
+        (NodeVarRef
+            {this->consume(TokenType::identifier, "Error : identifier expected").getVal()}
+        );
     }
     return nullptr;
 }
@@ -122,15 +101,6 @@ Token& Parser::consume(TokenType type, std::string errMsg) {
         this->throwError(errMsg);
     }
     return advance();
-}
-
-bool Parser::isVarAlreadyDeclared(std::string str){
-    auto it = std::find(this->known_var.begin(), this->known_var.end(), str);
-    if(it == this->known_var.end()){
-        return false;
-    }else{
-        return true;
-    }
 }
 
 bool Parser::check(TokenType type){

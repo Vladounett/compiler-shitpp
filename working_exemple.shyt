@@ -4,5 +4,5 @@ i declare b = a !
 i declare c = b !
 i declare c1 = c !
 i declare c2=c1!
-i am leaving c2 !
+i am leaving c2!
 goodbye !

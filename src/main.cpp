@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
     std::cout << "----- parsedProgram -----" << std::endl;
     parser.debugParsedProgram();
 
-    Asm_gen gen = Asm_gen(parser.getParsedProgram());
+    /*Asm_gen gen = Asm_gen(parser.getParsedProgram());
     gen.build_asm();
     std::cout << "----- builtASM -----" << std::endl;
     std::cout << gen.getBuiltAsm() << std::endl;
@@ -64,5 +64,5 @@ int main(int argc, char* argv[]){
     system("nasm -f elf64 output/finished_product.asm");
     system("ld output/finished_product.o -o output/finished_product.out");
 
-    return 0;
+    return 0;*/
 }

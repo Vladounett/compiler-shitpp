@@ -29,7 +29,6 @@ class Parser{
         NodeExprHandle parseExpr();
 
         std::vector<NodeStatementHandle> parsedProgram;
-        std::vector<std::string> known_var;
         std::vector<Token> tokens;
 
         short currentLine;
@@ -44,9 +43,6 @@ class Parser{
         bool check(TokenType type);
         bool check(TokenType type, std::string str);
         bool checkSequence(std::initializer_list<std::string> seq);
-        bool returnFlag;
-        bool helloFlag;
-        bool goodbyeFlag;
 
         void debugStatement(NodeStatement &nsh);
         void debugExpr(NodeExpr &ndh);

@@ -19,11 +19,6 @@ class Asm_gen{
         std::string getBuiltAsm();
 
     private:
-
-        struct VarInfo{
-            int offset;
-        };
-
         std::stringstream built_asm;
         std::vector<NodeStatementHandle> nodes;
         size_t stack_size;
