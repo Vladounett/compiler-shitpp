@@ -9,6 +9,7 @@
 #include "File_Builder.hpp"
 #include "Parser.hpp"
 #include "Asm_gen.hpp"
+#include "IRBuilder.hpp"
 
 int main(int argc, char* argv[]){
     //If input invalid = error, we don't do anything
@@ -52,6 +53,10 @@ int main(int argc, char* argv[]){
     parser.parse();
     std::cout << "----- parsedProgram -----" << std::endl;
     parser.debugParsedProgram();
+
+    IRBuilder irbuilder = IRBuilder(parser.getParsedProgram());
+    irbuilder.buildIR();
+    irbuilder.debugIR();
 
     /*Asm_gen gen = Asm_gen(parser.getParsedProgram());
     gen.build_asm();
