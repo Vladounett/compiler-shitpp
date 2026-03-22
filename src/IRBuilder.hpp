@@ -14,6 +14,7 @@ class IRBuilder{
         IRBuilder(std::vector<NodeStatementHandle>& parsedProgram);
         void buildIR();
         void debugIR();
+        std::vector<IRNode> getIR();
 
     private:
         std::vector<NodeStatementHandle>& parsedProgram;

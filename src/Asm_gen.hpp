@@ -7,27 +7,25 @@
 #include <sstream>
 #include <iostream>
 #include <unordered_map>
+#include "IRNodes.hpp"
 
-class Asm_gen{
+class Asm_gen {
+public:
+    Asm_gen(std::vector<IRNode> IR);
+    void build_asm();
+    std::string getBuiltAsm();
 
-    public:
+private:
+    std::stringstream built_asm;
+    std::vector<IRNode> IR;
 
-        Asm_gen(std::vector<NodeStatementHandle>& nodes);
+    std::unordered_map<std::string, int> varOffsets;
+    std::unordered_map<int, int> tempOffsets; 
+    
+    int totalStackSize = 0;
 
-        void build_asm();
-
-        std::string getBuiltAsm();
-
-    private:
-        std::stringstream built_asm;
-        std::vector<NodeStatementHandle> nodes;
-        size_t stack_size;
-        void genStatement(NodeStatement& ns);
-        void genExpr(NodeExpr& ne);
-        void write(std::string line, short indentIndex);
-        int varDiscovery();
-
-        std::unordered_map<std::string, VarInfo> varTable;
+    void write(std::string line, short indentIndex);
+    void resolveMemoryLayout();
 };
 
 

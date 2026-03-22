@@ -1,86 +1,69 @@
 #include "Asm_gen.hpp"
 #include <variant>
 
-Asm_gen::Asm_gen(std::vector<NodeStatementHandle>& nodes){
-    this->nodes = std::move(nodes);
-    this->stack_size = 0;
+Asm_gen::Asm_gen(std::vector<IRNode> IR) : IR(std::move(IR)) {}
+
+void Asm_gen::resolveMemoryLayout() {
+    int currentOffset = 0;
+    for (const auto& node : IR) {
+        if (!node.var.empty() && varOffsets.find(node.var) == varOffsets.end()) {
+            currentOffset += 8;
+            varOffsets[node.var] = currentOffset;
+        }
+        if (node.op == IRop::LoadConst || node.op == IRop::LoadVar) {
+            if (tempOffsets.find(node.var_dst) == tempOffsets.end()) {
+                currentOffset += 8;
+                tempOffsets[node.var_dst] = currentOffset;
+            }
+        }
+    }
+    // 16-bytes alignement
+    if (currentOffset % 16 != 0) currentOffset += 8;
+    this->totalStackSize = currentOffset;
 }
 
-void Asm_gen::build_asm(){
-
-    int totalOffset = this->varDiscovery();
+void Asm_gen::build_asm() {
+    resolveMemoryLayout();
 
     write("BITS 64", 0);
     write("section .text", 0);
     write("global _start", 0);
     write("_start:", 0);
-
     write("push rbp", 1);
     write("mov rbp, rsp", 1);
-    write("sub rsp, " + std::to_string(totalOffset), 1);
+    write("sub rsp, " + std::to_string(totalStackSize), 1);
 
-    for(NodeStatementHandle& nsh : this->nodes){
-        write("", 1);
-        genStatement(*nsh);
+    for (const auto& n : IR) {
+        switch (n.op) {
+            case IRop::LoadConst:
+                write("mov rax, " + std::to_string(n.immediate_val), 1);
+                write("mov qword [rbp - " + std::to_string(tempOffsets[n.var_dst]) + "], rax", 1);
+                break;
+
+            case IRop::LoadVar:
+                write("mov rax, [rbp - " + std::to_string(varOffsets[n.var]) + "]", 1);
+                write("mov qword [rbp - " + std::to_string(tempOffsets[n.var_dst]) + "], rax", 1);
+                break;
+
+            case IRop::StoreVar:
+                write("mov rax, [rbp - " + std::to_string(tempOffsets[n.var_src]) + "]", 1);
+                write("mov [rbp - " + std::to_string(varOffsets[n.var]) + "], rax", 1);
+                break;
+
+            case IRop::Return:
+                write("mov rdi, [rbp - " + std::to_string(tempOffsets[n.var_src]) + "]", 1);
+                write("mov rax, 60", 1);
+                write("syscall", 1);
+                break;
+        }
     }
 }
 
-void Asm_gen::genStatement(NodeStatement& ns){
-    std::visit(overload{
-        [this](NodeReturn& ret) {
-            genExpr(*ret.val);
-            write("mov rdi, rax", 1);
-            write("mov rax, 60", 1);
-            write("syscall", 1);
-        },
-        [this](NodeIntDecl& decl) {
-            genExpr(*decl.val);
-            write("mov qword [rbp - " + std::to_string(this->varTable[decl.var_name].offset) + "], rax", 1);
-            this->stack_size++;
-        },
-        [](NodeProgStart&) {
-        },
-        [](NodeProgEnd&) {
-        }
-    }, ns);
+void Asm_gen::write(std::string line, short indentIndex) {
+    std::string indent(indentIndex * 4, ' ');
+    this->built_asm << indent << line << "\n";
 }
 
-void Asm_gen::genExpr(NodeExpr& ne){
-    std::visit(overload{
-        [this](NodeVarRef& varRef) {
-            write("mov rax, [rbp - " + std::to_string(this->varTable[varRef.var_name].offset) + "]", 1);
-        },
-        [this](NodeIntLiteral& intLit) {
-            write("mov rax, " + std::to_string(intLit.val), 1);
-        }
-    }, ne);
-}
-
-void Asm_gen::write(std::string line, short indentIndex){
-    indentIndex *= 4;
-    std::string indent(indentIndex, ' ');
-    this->built_asm << indent << line << std::endl;
-}
-
-std::string Asm_gen::getBuiltAsm(){
+std::string Asm_gen::getBuiltAsm() {
     return this->built_asm.str();
-}
-
-int Asm_gen::varDiscovery(){
-    int offset = 0;
-
-    for(NodeStatementHandle& nsh : this->nodes){
-        std::visit(overload{
-            [](NodeReturn& ret) {},
-            [this, &offset](NodeIntDecl& decl) {offset+=8; this->varTable[decl.var_name] = {offset};},
-            [](NodeProgStart&) {},
-            [](NodeProgEnd&) {}
-        }, *nsh);
-    }
-
-    if(offset % 16 != 0){
-        offset += 8;
-    }
-
-    return offset;
 }

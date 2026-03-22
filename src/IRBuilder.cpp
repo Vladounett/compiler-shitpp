@@ -135,3 +135,7 @@ std::string irToString(IRop op) {
         default:              return "unknown";
     }
 }
+
+std::vector<IRNode> IRBuilder::getIR(){
+    return this->IR;
+}
